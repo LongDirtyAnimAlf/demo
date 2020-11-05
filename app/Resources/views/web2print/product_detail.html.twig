@@ -62,41 +62,6 @@
                         <dd>{{ ('attribute.' ~ product.carClass) | lower | trans }}</dd>
                     </dl>
 
-                    {% if product.saleInformation.saleInformation %}
-                        <dl class="item-property print-col-6 mb-0">
-                            <dt class="">{{ 'general.condition' | trans }}</dt>
-                            <dd>{{ ('attribute.' ~ product.saleInformation.saleInformation.condition) | lower | trans}}</dd>
-                        </dl>
-
-                        <dl class="item-property print-col-6 mb-0">
-                            <dt class="">{{ 'general.milage' | trans }}</dt>
-                            <dd>{{ product.saleInformation.saleInformation.milage}}</dd>
-                        </dl>
-                    {% endif %}
-
-
-                </div>
-                <div class="print-row">
-                    <hr/>
-                    <div class="mt-4 text-center">
-                        {% set priceInfo = product.oSPriceInfo %}
-                        {% set price = product.oSPrice %}
-
-
-                        {% if(priceInfo.hasDiscount) %}
-                            <p class="detail-price original mb-3">{{ priceInfo.originalPrice }}</p>
-                        {% endif %}
-
-                        <p class="detail-price mb-2">{{ price }}</p>
-
-                        <div class="detail-tax text-muted">
-                            <ul class="list-unstyled">
-                                {% for taxEntry in price.taxEntries %}
-                                    <li>{{ taxEntry.entry.name }}: {{ taxEntry.percent }}% ({{ taxEntry.amount.asNumeric | currency(price.currency.shortName) }})</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
 
                 </div>
             </div>
