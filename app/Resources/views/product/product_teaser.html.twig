@@ -19,22 +19,10 @@
             </div>
             <div class="card-body-bottom">
 
-                {% set priceInfo = product.oSPriceInfo %}
-
-                {% if(priceInfo.hasDiscount) %}
-                    <p class="card-price original mb-1">{{ priceInfo.originalPrice }}</p>
-                {% endif %}
-
-                <p class="card-price">{{ product.oSPrice }}</p>
                 <div class="row button-row">
-                    <div class="col p-1">
                         <a href="{{ detailLink }}" class="btn btn-block btn-secondary">
                             {{ 'general.details' | trans }}
                         </a>
-                    </div>
-                    <div class="col p-1">
-                        <a href="{{ path('shop-add-to-cart', { id: product.id }) }}" class="btn btn-block btn-primary">{{ 'general.buy' | trans }} <i class=" ml-2"><img src="/static/images/icons/cart.svg" height="20" width="auto"></i></a>
-                    </div>
                 </div>
             </div>
         </div>

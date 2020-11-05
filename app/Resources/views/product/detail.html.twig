@@ -98,66 +98,9 @@
                                 </dl>
                             {% endblock %}
 
-                            {% block salesinfos %}
-
-                                {% if product.saleInformation.saleInformation %}
-
-                                    <dl class="item-property col-6 mb-0">
-                                        <dt>{{ 'general.condition' | trans }}</dt>
-                                        <dd>{{ ('attribute.' ~ product.saleInformation.saleInformation.condition) | lower | trans}}</dd>
-                                    </dl>
-
-                                    <dl class="item-property col-6 mb-0">
-                                        <dt>{{ 'general.milage' | trans }}</dt>
-                                        <dd>{{ product.saleInformation.saleInformation.milage}}</dd>
-                                    </dl>
-
-                                {% endif %}
-                            {% endblock %}
-
                         </div>
 
                         <hr/>
-                        <div class="mt-4 text-center">
-                            {% set priceInfo = product.oSPriceInfo %}
-                            {% set price = product.oSPrice %}
-
-                            {% if(priceInfo.rules) %}
-
-                                <div class="alert alert-success mb-4" role="alert">
-
-                                    <p class="small mb-2"><strong>{{ 'general.your-benefits' | trans }}</strong></p>
-
-                                    <ul class="list-unstyled mb-0 small">
-                                        {% for rule in priceInfo.rules %}
-                                            <li>{{ rule.label }}</li>
-                                        {% endfor %}
-                                    </ul>
-
-                                </div>
-
-                            {% endif %}
-
-                            {% if(priceInfo.hasDiscount) %}
-                                <p class="detail-price original mb-3">{{ priceInfo.originalPrice }}</p>
-                            {% endif %}
-
-                            <p class="detail-price mb-2">{{ price }}</p>
-
-                            <div class="detail-tax text-muted">
-                                <ul class="list-unstyled">
-                                    {% for taxEntry in price.taxEntries %}
-                                        <li>{{ taxEntry.entry.name }}: {{ taxEntry.percent }}% ({{ taxEntry.amount.asNumeric | currency(price.currency.shortName) }})</li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-
-                            {% if product.saleInformation.saleInformation %}
-                                <p class="small text-muted mt-1">{{ 'general.available-in' | trans }} {{ ('attribute.' ~ product.saleInformation.saleInformation.availabilityType) | lower | trans }}</p>
-                            {% endif %}
-                        </div>
-
-                        <a href="{{ path('shop-add-to-cart', { id: product.id }) }}" class="btn btn-success btn-block">{{ 'general.add-to-cart' | trans }}</a>
 
                     </div>
 
