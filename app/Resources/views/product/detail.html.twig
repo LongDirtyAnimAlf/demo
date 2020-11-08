@@ -6,6 +6,11 @@
 
 {% block content %}
 
+        {% spaceless -%}
+            {% do pimcore_inline_script().appendFile('https://code.jquery.com/jquery-3.3.1.slim.min.js',null,null,{ integrity:"sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo",crossorigin:"anonymous"}) %}
+        {%- endspaceless %}
+
+
     <div id="main-content" class="main-content">
 
         <div class="d-md-none mt-3">
@@ -121,6 +126,278 @@
                 </div>
             {% endblock %}
 
+            {% block graphs %}
+                <div class="mt-5 col-12 text-center">
+                    <h4 class="text-center">GRAPHS</h4>
+
+		    {% set url = product.graphs_url %}
+	    
+                    {% if(url) %}
+
+                        <p>{{ url }}</p>
+                        
+			<div class="row my-2">
+		            <div class="col-md-4 py-1">
+			        <div class="card">
+	    		    	    <div class="card-body">
+	            			<canvas id="myChart{{product.id}}"></canvas>
+			            </div>
+			        </div>
+		            </div>
+		            <div class="col-md-4 py-1">
+		                <div class="card">
+		                    <div class="card-body">
+		                        <canvas id="myChart2"></canvas>
+		                    </div>
+		                </div>
+		            </div>
+		            <div class="col-md-4 py-1">
+		        	<div class="card">
+		            	    <div class="card-body">
+		                	<canvas id="myChart3"></canvas>
+		            	    </div>
+		        	</div>
+		    	    </div>
+			</div>
+			
+			
+			
+			
+			
+{% block javascript_footer %}
+{%- spaceless -%}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.js"></script>
+<script>
+{# {%- pimcoreassetcompress -%} #}
+var chartData = {
+  labels: ["{{product.name}}", "M", "T", "W", "T", "F", "S"],
+  datasets: [{
+    data: [589, 445, 483, 503, 689, 692, 634],
+  },
+  {
+    data: [639, 465, 493, 478, 589, 632, 674],
+  }]
+};
+var chLine = document.getElementById("myChart{{product.id}}");
+if (chLine) {
+  new Chart(chLine, {
+  type: 'line',
+  data: chartData,
+  options: {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: false
+        }
+      }]
+    },
+    legend: {
+      display: false
+    }
+  }
+  });
+}
+var colors = ['rgba(255, 99, 132, 0.8)','#28a745','#333333','#c3e6cb','#dc3545','#6c757d'];
+var chBar = document.getElementById("myChart2");
+var chartData = {
+  labels: ["S", "M", "T", "W", "T", "F", "S"],
+  datasets: [{
+    data: [589, 445, 483, 503, 689, 692, 634],
+    backgroundColor: colors[0]
+  },
+  {
+    data: [209, 245, 383, 403, 589, 692, 580],
+    backgroundColor: colors[1]
+  },
+  {
+    data: [489, 135, 483, 290, 189, 603, 600],
+    backgroundColor: colors[2]
+  },
+  {
+    data: [639, 465, 493, 478, 589, 632, 674],
+    backgroundColor: colors[4]
+  }]
+};
+if (chBar) {
+  new Chart(chBar, {
+  type: 'bar',
+  data: chartData,
+  options: {
+    scales: {
+      xAxes: [{
+        barPercentage: 0.4,
+        categoryPercentage: 0.5
+      }],
+      yAxes: [{
+        ticks: {
+          beginAtZero: false
+        }
+      }]
+    },
+    legend: {
+      display: false
+    }
+  }
+  });
+}
+var ctx = document.getElementById('myChart3');
+var myChart3 = new Chart(ctx, {
+  type: 'polarArea',
+  data: {
+    labels: ['Vultr', 'DigitalOcean', 'Cloudways', 'Bluehost'],
+    datasets: [{
+      label: 'Fully Loaded Time',
+      data: [2.2, 2.6, 2.4, 4.3],
+      backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+      ],
+      borderColor: [
+        'rgba(255, 99, 132, 1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+      ],
+      borderWidth: 1
+    }]
+  },
+  options: {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
+}
+);
+///  Calling API and modeling data for each chart ///
+const btcData = async () => {
+  const response = await fetch('{{ url | raw }}');
+  const json = await response.json();
+  const data = json.Data.Data
+  const times = data.map(obj => obj.time)
+  const prices = data.map(obj => obj.high)
+  return {
+    times,
+    prices
+  }
+}
+
+/// Error handling ///
+function checkStatus(response) {
+  if (response.ok) {
+    return Promise.resolve(response);
+  } else {
+    return Promise.reject(new Error(response.statusText));
+  }
+}
+
+/// Charts ///
+let createBtcChart
+async function printBtcChart() {
+  let { times, prices } = await btcData()
+  let btcChart = document.getElementById('btcChart').getContext('2d');
+  let gradient = btcChart.createLinearGradient(0, 0, 0, 400);
+  gradient.addColorStop(0, 'rgba(247,147,26,.5)');
+  gradient.addColorStop(.425, 'rgba(255,193,119,0)');
+  Chart.defaults.global.defaultFontFamily = 'Red Hat Text';
+  Chart.defaults.global.defaultFontSize = 12;
+
+  createBtcChart = new Chart(btcChart, {
+    type: 'line',
+    data: {
+      labels: times,
+      datasets: [{
+        label: '$',
+        data: prices,
+        backgroundColor: gradient,
+        borderColor: 'rgba(247,147,26,1)',
+        borderJoinStyle: 'round',
+        borderCapStyle: 'round',
+        borderWidth: 3,
+        pointRadius: 0,
+        pointHitRadius: 10,
+        lineTension: .2,
+      }]
+    },
+
+    options: {
+      title: {
+        display: false,
+        text: 'Heckin Chart!',
+        fontSize: 35
+      },
+
+      legend: {
+        display: false
+      },
+
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0
+        }
+      },
+
+      scales: {
+        xAxes: [{
+          display: false,
+          gridLines: {}
+        }],
+        yAxes: [{
+          display: false,
+          gridLines: {}
+        }]
+      },
+
+      tooltips: {
+        callbacks: {
+          //This removes the tooltip title
+          title: function() {}
+       },
+        //this removes legend color
+        displayColors: false,
+        yPadding: 10,
+        xPadding: 10,
+        position: 'nearest',
+        caretSize: 10,
+        backgroundColor: 'rgba(255,255,255,.9)',
+        bodyFontSize: 15,
+        bodyFontColor: '#303030' 
+      }
+    }
+  });
+}
+
+
+/// Update current price ///
+async function updateBitcoinPrice() {
+  let { times, prices } = await btcData()
+  let currentPrice = prices[prices.length-1].toFixed(2);
+
+  document.getElementById("btcPrice").innerHTML = "$" + currentPrice;
+}
+
+updateBitcoinPrice()
+
+printBtcChart()
+{# {%- endpimcoreassetcompress -%} #}
+</script>
+{%- endspaceless -%}
+{% endblock %}
+			
+                        
+                    {% endif %}
+
+                </div>
+            {% endblock %}
+            
             {% block attributes %}
                 <div class="col-12">
 
@@ -138,6 +415,10 @@
                             <a class="nav-link" id="engine-tab" data-toggle="tab" href="#engine" role="tab" aria-controls="engine" aria-selected="false">{{ 'general.engine' | trans }}</a>
                         </li>
                     {%  endif %}
+                        <li class="nav-item">
+                            <a class="nav-link" id="heavy-tab" data-toggle="tab" href="#heavy" role="tab" aria-controls="heavy" aria-selected="false">{{ 'general.heavy' | trans }}</a>
+                        </li>
+                    
                 </ul>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
@@ -216,6 +497,21 @@
 
                         </div>
                     {%  endif %}
+                    
+                        <div class="tab-pane fade" id="heavy" role="tabpanel" aria-labelledby="heavy-tab">
+
+                            <div class="m-3">
+                            
+			        <div class="card">
+	    		    	    <div class="card-body">
+	            			<canvas id="btcChart"></canvas>
+			            </div>
+			        </div>
+                            
+                            </div>
+
+                        </div>
+                    
                 </div>
 
             </div>
